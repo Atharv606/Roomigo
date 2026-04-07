@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roomigo - Choose Your Journey</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+body { height: 100vh; display: flex; flex-direction: column; background-color: #F4F1EA; color: #1E3829; }
+header { padding: 20px 40px; text-align: center; font-size: 32px; font-weight: 700; background: rgba(255,255,255,0.7); border-bottom: 1px solid rgba(0,0,0,0.05); }
+header span { color: #558B6E; }
+.split-container { display: flex; flex: 1; overflow: hidden; }
+.half { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; text-align: center; transition: 0.4s; cursor: pointer; position: relative; }
+.half:hover { flex: 1.1; background: rgba(0,0,0,0.03); }
+.local-half { background: linear-gradient(135deg, rgba(143, 188, 143, 0.2), rgba(244, 241, 234, 0.5)); border-right: 2px solid rgba(0,0,0,0.05); }
+.global-half { background: linear-gradient(135deg, rgba(74, 144, 226, 0.15), rgba(244, 241, 234, 0.5)); }
+h2 { font-size: 42px; margin-bottom: 15px; }
+.local-half h2 { color: #2A4032; }
+.global-half h2 { color: #2C5282; }
+p { font-size: 18px; max-width: 400px; opacity: 0.85; margin-bottom: 30px; line-height: 1.6;}
+.btn { padding: 15px 40px; border-radius: 50px; font-weight: 600; font-size: 18px; border: none; cursor: pointer; transition: 0.3s; color: white; }
+.btn-local { background: #558B6E; box-shadow: 0 8px 20px rgba(85, 139, 110, 0.3); }
+.btn-global { background: #4A90E2; box-shadow: 0 8px 20px rgba(74, 144, 226, 0.3); }
+.half:hover .btn { transform: translateY(-5px); }
+@media(max-width: 768px) { .split-container { flex-direction: column; } .half { border-right: none; border-bottom: 2px solid rgba(0,0,0,0.05); } }
+</style>
+</head>
+<body>
+    <header>Room<span>igo</span></header>
+    <div class="split-container">
+        <div class="half local-half" onclick="window.location='local.html'">
+            <h2>Roomigo Local</h2>
+            <p>Moving to a new city within your country? Find domestic flatmates based on college, budget, and lifestyle.</p>
+            <button class="btn btn-local">Enter Local</button>
+        </div>
+        <div class="half global-half" onclick="window.location='global.html'">
+            <h2>Roomigo Global</h2>
+            <p>Moving abroad? Connect with international expats and students from your home country.</p>
+            <button class="btn btn-global">Enter Global</button>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Roomigo Local - Login</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="firebase.js"></script>
+<script src="app.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+body { height: 100vh; display: flex; justify-content: center; align-items: center; background-color: #F4F1EA; color: #2A4032; }
+.container { background: rgba(255, 255, 255, 0.7); padding: 40px; width: 380px; border-radius: 24px; box-shadow: 0 10px 40px rgba(42, 64, 50, 0.1); text-align: center; }
+.logo { font-size: 30px; font-weight: 700; margin-bottom: 25px; color: #1E3829; }
+.logo span { color: #558B6E; }
+input { width: 100%; padding: 14px; margin: 8px 0; border-radius: 10px; border: 1px solid #ccc; outline: none; }
+button { width: 100%; padding: 14px; border: none; border-radius: 50px; background: #558B6E; color: white; font-weight: 600; cursor: pointer; margin-top:10px; }
+button.secondary { background: white; color: #558B6E; border: 1px solid #558B6E; }
+#error { color: red; margin-top: 10px; font-size: 14px;}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="logo">Room<span>igo</span> Local</div>
+    <input id="email" type="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+    <button onclick="loginLocal()">Login to Local</button>
+    <button class="secondary" onclick="signupLocal()">Create Local Account</button>
+    <div id="error"></div>
+    <div id="spinner" style="display:none; margin-top:10px;">Loading...</div>
+    <br><br>
+    <a href="local.html" style="font-size: 14px; color: #558B6E; text-decoration: none;">← Back</a>
+</div>
+</body>
+</html>

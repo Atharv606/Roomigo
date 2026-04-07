@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Roomigo Local - Liked Profiles</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="firebase.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body { background: #F4F1EA; font-family: 'Poppins', sans-serif; margin:0; padding:40px 20px;}
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; max-width: 1200px; margin: auto; }
+.card { background: white; padding: 25px; border-radius: 15px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: relative;}
+.like-btn { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: #e63946; }
+.avatar { width: 80px; height: 80px; border-radius: 50%; background: #eee; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: bold; overflow:hidden;}
+.compare-btn { width: 100%; margin-top: 15px; padding: 10px; background: white; border: 1px solid #558B6E; color: #558B6E; border-radius: 15px; cursor: pointer; font-weight: bold;}
+</style>
+</head>
+<body>
+    <button onclick="window.location='local-listings.html'" style="background:none; border:none; cursor:pointer; font-weight:bold; font-size:18px; margin-bottom: 20px; color:#558B6E;">← Back to Feed</button>
+    <h2 style="text-align:center; margin-bottom:30px; color:#558B6E;">❤️ Liked Domestic Profiles</h2>
+    <div class="grid" id="list"></div>
+
+<script>
+let likedProfiles = JSON.parse(localStorage.getItem("likedProfiles_local")) || [];
+
+auth.onAuthStateChanged(user => {
+    if(!user || likedProfiles.length === 0) {
+        document.getElementById("list").innerHTML = "<p style='text-align:center; grid-column:1/-1;'>No liked profiles yet.</p>";
+        return;
+    }
+    
+    db.collection("users_local").get().then(snapshot => {
+        const list = document.getElementById("list");
+        snapshot.forEach(doc => {
+            if(doc.id !== user.uid && likedProfiles.includes(doc.id)) {
+                const d = doc.data();
+                list.innerHTML += `
+                    <div class="card" id="card-${doc.id}">
+                        <button class="like-btn" onclick="removeLike('${doc.id}')">❤️</button>
+                        <div class="avatar">${d.photoURL ? `<img src="${d.photoURL}" style="width:100%;height:100%;object-fit:cover;">` : (d.name||"U")[0]}</div>
+                        <h3>${d.name || "Unknown"}</h3>
+                        <p style="color:#558B6E; font-size:13px; font-weight:bold; margin-bottom:10px;">${d.college || "-"}</p>
+                        <p><b>City:</b> ${d.city || "-"}</p>
+                        <p><b>Budget:</b> ₹${d.budget || "-"}</p>
+                        <button class="compare-btn" onclick="compareUser('${doc.id}')">Compare Compatibility</button>
+                    </div>`;
+            }
+        });
+    });
+});
+
+function removeLike(id) {
+    likedProfiles = likedProfiles.filter(pId => pId !== id);
+    localStorage.setItem("likedProfiles_local", JSON.stringify(likedProfiles));
+    document.getElementById(`card-${id}`).style.display = 'none';
+}
+function compareUser(id){ localStorage.setItem("compare_id", id); window.location = "local-compare.html"; }
+</script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Roomigo Local - Compare</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="firebase.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body { background: #F4F1EA; font-family: 'Poppins', sans-serif; padding:40px 20px;}
+.container { max-width: 800px; margin: auto; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; }
+.compare-table { width: 100%; border-collapse: collapse; margin-top: 30px; }
+.compare-table th, .compare-table td { padding: 15px; border-bottom: 1px solid #eee; }
+.compare-table th { background: #f9f9f9; color: #558B6E;}
+.match { color: #0f5132; background: #d1e7dd; padding: 5px 10px; border-radius: 10px; font-size:12px; font-weight:bold;}
+.diff { color: #842029; background: #f8d7da; padding: 5px 10px; border-radius: 10px; font-size:12px; font-weight:bold;}
+</style>
+</head>
+<body>
+<div class="container">
+    <button onclick="window.history.back()" style="background:none; border:none; cursor:pointer; font-weight:bold; font-size:16px; margin-bottom: 20px; color:#558B6E;">← Back</button>
+    <h2 style="color:#558B6E;">Local Compatibility Analysis</h2>
+    <table class="compare-table">
+        <thead>
+            <tr><th>Factor</th><th>You</th><th id="themHeader">Them</th><th>Status</th></tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+    </table>
+</div>
+
+<script>
+let compareId = localStorage.getItem("compare_id");
+const factors = [
+    {key:'city', label:'Target City'}, 
+    {key:'budget', label:'Budget'}, 
+    {key:'sleep', label:'Sleep Schedule'}, 
+    {key:'cleanliness', label:'Cleanliness'},
+    {key:'personality', label:'Personality'}
+];
+
+auth.onAuthStateChanged(async user => {
+    if(!user || !compareId) return;
+
+    const myDoc = await db.collection("users_local").doc(user.uid).get();
+    const theirDoc = await db.collection("users_local").doc(compareId).get();
+
+    if(myDoc.exists && theirDoc.exists) {
+        const me = myDoc.data();
+        const them = theirDoc.data();
+        document.getElementById('themHeader').innerText = them.name || "Roommate";
+
+        const tbody = document.getElementById('tbody');
+        factors.forEach(f => {
+            const val1 = (me[f.key] || "-").toLowerCase();
+            const val2 = (them[f.key] || "-").toLowerCase();
+            
+            let statusHTML = "";
+            if(val1 === val2 && val1 !== "-") {
+                statusHTML = `<span class="match">Match</span>`;
+            } else {
+                statusHTML = `<span class="diff">Differs</span>`;
+            }
+
+            tbody.innerHTML += `<tr>
+                <td><b>${f.label}</b></td>
+                <td>${me[f.key] || "-"}</td>
+                <td>${them[f.key] || "-"}</td>
+                <td>${statusHTML}</td>
+            </tr>`;
+        });
+    }
+});
+</script>
+</body>
+</html>

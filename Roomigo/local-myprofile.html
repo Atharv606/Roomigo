@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Roomigo Local - My Profile</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="firebase.js"></script>
+<script src="app.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+body { background: #F4F1EA; padding: 40px 20px; color: #1E3829;}
+.container { max-width: 800px; margin: auto; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; }
+.avatar { width: 130px; height: 130px; border-radius: 50%; object-fit: cover; border: 3px solid #558B6E; margin-bottom: 20px;}
+.edit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; text-align: left;}
+input, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; outline: none; }
+button { width: 100%; padding: 15px; background: #558B6E; color: white; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; margin-top: 20px; }
+.trust-panel { background: #d1e7dd; padding: 15px; border-radius: 10px; margin: 20px 0; font-weight: bold; color: #0f5132;}
+</style>
+</head>
+<body>
+<div class="container">
+    <button onclick="window.location='local-listings.html'" style="background:none; border:none; color:#558B6E; cursor:pointer; width:auto; text-align:left; padding:0; margin-bottom:20px; font-weight:bold;">← Back to Local Feed</button>
+    <h2 style="color:#558B6E;">My Local Profile</h2>
+    <img id="profilePhoto" src="https://via.placeholder.com/130" class="avatar">
+    <br><input type="file" id="photoInput" accept="image/*" style="border: none; width: auto; text-align:center;">
+    
+    <div class="trust-panel" id="trustPanel">🛡️ Trust Score: Calculating...</div>
+
+    <div class="edit-grid">
+        <input id="name" placeholder="Full Name">
+        <input id="phone" placeholder="Phone Number">
+        <input id="college" placeholder="College / Workplace">
+        <input id="city" placeholder="Target City">
+        <select id="accommodation"><option value="">Accommodation</option><option>Hostel</option><option>PG</option><option>Flat</option></select>
+        <input id="budget" type="number" placeholder="Budget">
+        <select id="personality"><option value="">Personality</option><option>Studious</option><option>Party</option><option>Calm</option></select>
+        <select id="cleanliness"><option value="">Cleanliness</option><option>Very Clean</option><option>Messy</option></select>
+        <select id="sleep"><option value="">Sleep Schedule</option><option>Early Sleeper</option><option>Night Owl</option></select>
+    </div>
+    <button onclick="updateProfile()">Save Local Changes</button>
+</div>
+
+<script>
+let base64ImageToSave = null;
+document.getElementById('photoInput').addEventListener('change', function(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 250; canvas.height = 250;
+      canvas.getContext('2d').drawImage(img, 0, 0, 250, 250);
+      base64ImageToSave = canvas.toDataURL('image/jpeg', 0.7);
+      document.getElementById('profilePhoto').src = base64ImageToSave;
+    }
+    img.src = event.target.result;
+  }
+  reader.readAsDataURL(file);
+});
+
+auth.onAuthStateChanged(user => {
+  if (!user) return window.location = "local-login.html";
+  db.collection("users_local").doc(user.uid).get().then(doc => {
+    if (doc.exists) {
+      const d = doc.data();
+      if (d.photoURL) document.getElementById("profilePhoto").src = d.photoURL;
+      
+      document.getElementById("name").value = d.name || "";
+      document.getElementById("phone").value = d.phone || "";
+      document.getElementById("college").value = d.college || "";
+      document.getElementById("city").value = d.city || "";
+      document.getElementById("accommodation").value = d.accommodation || "";
+      document.getElementById("budget").value = d.budget || "";
+      document.getElementById("personality").value = d.personality || "";
+      document.getElementById("cleanliness").value = d.cleanliness || "";
+      document.getElementById("sleep").value = d.sleep || "";
+
+      document.getElementById("trustPanel").innerText = `🛡️ Trust Score: ${calculateTrustScore(d)}%`;
+    }
+  });
+});
+
+function updateProfile() {
+  const user = auth.currentUser; if (!user) return;
+  
+  let profileData = {
+    name: document.getElementById("name").value, phone: document.getElementById("phone").value,
+    college: document.getElementById("college").value, city: document.getElementById("city").value,
+    accommodation: document.getElementById("accommodation").value, budget: document.getElementById("budget").value,
+    personality: document.getElementById("personality").value, cleanliness: document.getElementById("cleanliness").value,
+    sleep: document.getElementById("sleep").value
+  };
+
+  if (base64ImageToSave) profileData.photoURL = base64ImageToSave;
+
+  db.collection("users_local").doc(user.uid).set(profileData, { merge: true })
+    .then(() => { alert("Updated Successfully!"); location.reload(); })
+    .catch(e => alert(e.message));
+}
+</script>
+</body>
+</html>
